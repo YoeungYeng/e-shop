@@ -19,6 +19,9 @@
 
     <link href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         .swiper-wrapper {
             width: 80%;
@@ -85,67 +88,72 @@
                 <!-- Dropdown menu -->
                 <div id="multi-dropdown"
                     class="z-10 hidden p-2 bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-96 h-[500px] overflow-y-auto dark:bg-gray-700">
-                    <ul class="py-2 gap-4 text-sm text-gray-700 dark:text-gray-200"
-                        aria-labelledby="multiLevelDropdownButton">
-                        <div class="flex justify-between px-4">
-                            <div>
-                                <span class="text-xl relative top-0 right-0">
-                                    <i class="fa-solid fa-cart-shopping "></i>
-                                    <span
-                                        class="absolute -top-1 -right-3 bg-red-600 text-white text-xs w-5 h-5 flex justify-center items-center rounded-full">{{ count((array) session('cart')) }}</span>
-                                </span>
-                            </div>
-                            <div>
-                                @php $total = 0 @endphp
-                                @foreach ((array) session('cart') as $id => $details)
-                                    @php $total += $details['sale_price'] * $details['quantity'] @endphp
-                                @endforeach
-                                <h4 class="font-bold text-2xl text-white">
-                                    Total: <span>${{ $total }} </span>
-                                </h4>
-                            </div>
-                        </div>
-                        {{-- image, title, price & quality --}}
-                        <div class="flex gap-4 p-4 justify-start items-start">
-                            @if (session('cart'))
-                                @foreach (session('cart') as $id => $details)
-                                    <div>
-                                        {{-- image --}}
-                                        <img class="w-32 h-32 object-cover rounded-lg"
-                                            src="{{ \Illuminate\Support\Facades\Storage::url($details['image']) }}"
-                                            alt="{{ $details['name'] }}">
-                                    </div>
-                                    <div>
 
-                                        <h3 class="text-lg text-gray-100 font-bold"> {{ $details['name'] }} </h3>
-                                        <h4 class="text-sm text-gray-100 font-medium"> Price:
-                                            ${{ $details['sale_price'] }}
+                    {{-- Header: Cart icon & total --}}
+                    <div class="flex justify-between items-center px-4 py-2">
+                        <div class="relative">
+                            <i class="fa-solid fa-cart-shopping text-xl text-gray-800 dark:text-gray-200"></i>
+                            <span
+                                class="absolute -top-2 -right-3 bg-red-600 text-white text-xs w-5 h-5 flex justify-center items-center rounded-full">
+                                {{ count((array) session('cart')) }}
+                            </span>
+                        </div>
+
+                        <div>
+                            @php $total = 0; @endphp
+                            @foreach ((array) session('cart') as $id => $details)
+                                @php $total += $details['sale_price'] * $details['quantity']; @endphp
+                            @endforeach
+                            <h4 class="font-bold text-lg text-gray-900 dark:text-white">
+                                Total: <span class="text-red-600">${{ $total }}</span>
+                            </h4>
+                        </div>
+                    </div>
+
+                    {{-- Cart Items --}}
+                    <div class="divide-y divide-gray-200 dark:divide-gray-600">
+                        @if (session('cart'))
+                            @foreach (session('cart') as $id => $details)
+                                <div class="flex gap-4 p-4 items-center">
+                                    <img class="w-20 h-20 object-cover rounded-lg"
+                                        src="{{ \Illuminate\Support\Facades\Storage::url($details['image']) }}"
+                                        alt="{{ $details['name'] }}">
+
+                                    <div class="flex flex-col">
+                                        <h3 class="text-base text-gray-900 dark:text-gray-100 font-bold">
+                                            {{ $details['name'] }}
+                                        </h3>
+                                        <h4 class="text-sm text-gray-700 dark:text-gray-300">
+                                            Price: ${{ $details['sale_price'] }}
                                         </h4>
-                                        <h4 class="text-sm text-gray-100 font-medium"> Quality:
-                                            {{ $details['quantity'] }} </h4>
-                                @endforeach
-                            @endif
-                            <a href="{{ route('cart') }}">
-                                <button
-                                    class="mt-2 mx-auto text-white w-[200px] bg-red-600 hover:bg-red-500 duration-500 transition-all px-6 py-2 rounded-full">
-                                    View All
-                                </button>
-                            </a>
-                        </div>
+                                        <h4 class="text-sm text-gray-700 dark:text-gray-300">
+                                            Quantity: {{ $details['quantity'] }}
+                                        </h4>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @else
+                            <p class="p-4 text-gray-500 dark:text-gray-400 text-sm">Your cart is empty.</p>
+                        @endif
+                    </div>
+
+                    {{-- Footer: View All --}}
+                    <div class="p-4 text-center">
+                        <a href="{{ route('cart') }}">
+                            <button
+                                class="text-white w-full bg-red-600 hover:bg-red-500 duration-300 px-6 py-2 rounded-full">
+                                View All
+                            </button>
+                        </a>
+                    </div>
                 </div>
 
-
-
-                </ul>
-
-                </div>
-
-            {{-- user --}}
-            <span class="text-xl cursor-pointer hover:text-red-500">
-                <a href="{{ route('register') }}">
-                    <i class="fa-regular fa-user"></i>
-                </a>
-            </span>
+                {{-- user --}}
+                <span class="text-xl cursor-pointer hover:text-red-500">
+                    <a href="{{ route('register') }}">
+                        <i class="fa-regular fa-user"></i>
+                    </a>
+                </span>
             </div>
 
         </nav>

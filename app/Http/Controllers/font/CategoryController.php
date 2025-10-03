@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Request;
 
 class CategoryController extends Controller
 {
@@ -50,10 +50,12 @@ class CategoryController extends Controller
             $cart[$id]['quantity']++;
         } else {
             $cart[$product->id] = [
+                "id" => $product->id,
                 'name' => $product->name,
                 'sale_price' => $product->sale_price,
                 'quantity' => 1,
                 'image' => $product->image,
+                'description' => $product->description,
 
             ];
         }
@@ -63,8 +65,9 @@ class CategoryController extends Controller
         return redirect()->back()->with('success', 'Product added to cart successfully!');
     }
 
-    public function removeFromCart(Product $product)
+    public function removeFromCart($id)
     {
+        $product = Product::find($id);
         // check if product exists
         if (!$product) {
             abort(404);
@@ -86,8 +89,20 @@ class CategoryController extends Controller
             session()->put('cart', $cart);
         }
 
-        return redirect()->route("product.show", $product->id);
+        return redirect()->back()->with('success', 'Product removed from cart successfully!');
     }
 
 
+    // delete item from cart
+    public function remove($id)
+    {
+        $cart = session()->get('cart', []);
+
+        if (isset($cart[$id])) {
+            unset($cart[$id]);
+            session()->put('cart', $cart);
+        }
+
+        return redirect()->back()->with('success', 'Product removed from cart successfully!');
+    }
 }

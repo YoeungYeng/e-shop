@@ -11,9 +11,10 @@ Route::get('/', [App\Http\Controllers\font\CategoryController::class, 'getAllCat
 Route::get('/singleproduct/{product}', [App\Http\Controllers\font\CategoryController::class, 'show']);
 // add to cart
 Route::get('/cart/add/{id}', [App\Http\Controllers\font\CategoryController::class, 'addToCart'])->name('cart.add');
-Route::post('/cart/remove/{product}', [App\Http\Controllers\font\CategoryController::class, 'removeFromCart'])->name('cart.remove');
+Route::get('/cart/remove/{id}', [App\Http\Controllers\font\CategoryController::class, 'removeFromCart'])->name('cart.remove');
 Route::get('/cart', [App\Http\Controllers\font\CategoryController::class, 'cart'])->name('cart');
-
+// remove from cart
+Route::delete('/cart/remove/{id}', [App\Http\Controllers\font\CategoryController::class, 'remove'])->name('cart.remove.From.Cart');
 Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
