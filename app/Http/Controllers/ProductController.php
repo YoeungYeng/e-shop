@@ -6,6 +6,7 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Category;
 use App\Models\Product;
+use Exception;
 
 class ProductController extends Controller
 {
@@ -43,7 +44,7 @@ class ProductController extends Controller
 
             return redirect ()->route ('product.index');
         } catch (Exception $e) {
-            Log::error ('News not found: ' . $e->getMessage ());
+            
             return view ('errors.custom', [
                 'message' => 'News not found.'
             ]);

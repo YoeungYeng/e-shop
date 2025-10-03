@@ -11,47 +11,56 @@ use Carbon\Carbon;
 class CategoryController extends Controller
 {
     // get all Category
-    public function getAllCategory ()
+    public function getAllCategory()
     {
-        $endTime = Carbon::now ()->addDay ()->setTime (12, 0, 0)->toIso8601String ();
-        $categories = Category::all ();
-        $products = Product::all ();
+        $endTime = Carbon::now()->addDay()->setTime(12, 0, 0)->toIso8601String();
+        $categories = Category::all();
+        $products = Product::all();
 
-        return view ('welcome', compact ('categories', 'endTime', 'products'));
+        return view('welcome', compact('categories', 'endTime', 'products'));
     }
 
     // show product detail
-    public function getSingleProduct (Product $product)
+    public function show($id)
     {
-        $cart = session()->get('cart', []);
-        return view ('products.show', compact ('product', 'cart'));
+        $product = Product::findOrFail($id);
+        return view('products.show', compact('product'));
+    }
+
+    // view cart
+    public function cart()
+    {
+        return view('cart.index');
     }
 
     // add to cart
-    public function addToCart (Product $product)
+    public function addToCart($id)
     {
         // check if product exists
+        $product = Product::findOrFail($id);
         if (!$product) {
-            abort (404);
+            abort(404);
         }
 
         // Get cart from session
-        $cart = session ()->get ('cart', []);
+        $cart = session()->get('cart', []);
 
         // Add or update product in cart
-        if (isset($cart[$product->id])) {
-            $cart[$product->id]['quantity']++;
+        if (isset($cart[$id])) {
+            $cart[$id]['quantity']++;
         } else {
             $cart[$product->id] = [
                 'name' => $product->name,
-                'price' => $product->sale_price,
+                'sale_price' => $product->sale_price,
                 'quantity' => 1,
+                'image' => $product->image,
+
             ];
         }
 
-        session ()->put ('cart', $cart);
+        session()->put('cart', $cart);
 
-        return redirect ()->route ("product.show", $product->id);
+        return redirect()->back()->with('success', 'Product added to cart successfully!');
     }
 
     public function removeFromCart(Product $product)
@@ -77,7 +86,7 @@ class CategoryController extends Controller
             session()->put('cart', $cart);
         }
 
-        return redirect ()->route ("product.show", $product->id);
+        return redirect()->route("product.show", $product->id);
     }
 
 
